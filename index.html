@@ -4,10 +4,15 @@
 <head>
    <title>Palagai</title>
    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.css">
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
    <style type="text/css">
+   html {
+      touch-action: none;
+   }
    #container {
       width: 100%;
       height: 100vh;
+      overflow: hidden;
    }
 
    #canvas {
@@ -23,6 +28,11 @@
    </div>
 </body>
 <script type="text/javascript">
+
+document.ontouchmove = function(event){
+    event.preventDefault();
+}
+
 var brushState = {
    color: "white",
    size: "2"
@@ -38,29 +48,51 @@ var isDrawing;
 function onDown(e) {
    isDrawing = true;
    ctx.beginPath()
-   ctx.moveTo(e.clientX, e.clientY);
+   if (e.touches) {
+      var x = e.touches[0].pageX,
+          y = e.touches[0].pageY
+   } else {
+      var x = e.pageX,
+          y = e.pageY
+   }
+   ctx.moveTo(x, y);
 };
 
 function onMove(e) {
    if (isDrawing) {
+      if (e.touches) {
+         var x = e.touches[0].pageX,
+             y = e.touches[0].pageY
+      } else {
+         var x = e.pageX,
+             y = e.pageY
+      }
       ctx.lineWidth = brushState.size;
       ctx.strokeStyle = brushState.color;
-      ctx.lineTo(e.clientX, e.clientY);
+      ctx.lineTo(x, y);
       ctx.stroke();
    }
 };
 
 function onUp() {
    isDrawing = false;
+   // brushState.size += 2
 };
 
-el.onmousedown = onDown
-el.onmousemove = onMove
-el.onmouseup = onUp
+var $el = $(el)
 
-el.ontouchstart = onDown
-el.ontouchmove = onMove
-el.ontouchend = onUp
+$el.on("mousedown touchstart", function (e) {
+   onDown(e.originalEvent)
+})
+
+$el.on("mousemove touchmove", function (e) {
+   console.log(e.touches[0].clientX)
+   onMove(e.originalEvent)
+})
+
+$el.on("mouseup touchend", function (e) {
+   onUp(e.originalEvent)
+})
 
 </script>
 </html>
