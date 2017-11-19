@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+   <title>Palagai</title>
+   <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.css">
+   <style type="text/css">
+   #container {
+      width: 100%;
+      height: 100vh;
+   }
+
+   #canvas {
+      background-color: black;
+   }
+
+   </style>
+</head>
+
+<body>
+   <div id="container">
+      <canvas id="canvas"></canvas>
+   </div>
+</body>
+<script type="text/javascript">
+var brushState = {
+   color: "white",
+   size: "2"
+}
+
+var rect = document.querySelector("#container").getBoundingClientRect()
+var el = document.getElementById('canvas');
+el.setAttribute("width", rect.width)
+el.setAttribute("height", rect.height)
+var ctx = el.getContext('2d');
+var isDrawing;
+
+function onDown(e) {
+   isDrawing = true;
+   ctx.beginPath()
+   ctx.moveTo(e.clientX, e.clientY);
+};
+
+function onMove(e) {
+   if (isDrawing) {
+      ctx.lineWidth = brushState.size;
+      ctx.strokeStyle = brushState.color;
+      ctx.lineTo(e.clientX, e.clientY);
+      ctx.stroke();
+   }
+};
+
+function onUp() {
+   isDrawing = false;
+};
+
+el.onmousedown = onDown
+el.onmousemove = onMove
+el.onmouseup = onUp
+
+el.ontouchstart = onDown
+el.ontouchmove = onMove
+el.ontouchend = onUp
+
+</script>
+</html>
