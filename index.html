@@ -3,8 +3,11 @@
 
 <head>
    <title>Palagai</title>
+   <meta name="apple-mobile-web-app-capable" content="yes">
    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.css">
    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+   <link href="https://cdn.bootcss.com/drawingboard.js/0.4.6/drawingboard.css" rel="stylesheet">
+   <script src="https://cdn.bootcss.com/drawingboard.js/0.4.6/drawingboard.js"></script>
    <style type="text/css">
    html {
       touch-action: none;
@@ -24,75 +27,23 @@
 
 <body>
    <div id="container">
-      <canvas id="canvas"></canvas>
    </div>
 </body>
 <script type="text/javascript">
 
-document.ontouchmove = function(event){
-    event.preventDefault();
-}
+var customBoard = new DrawingBoard.Board('container', {
+   background: "#000",
+   color: "#fff",
+   size: 10,
+   controls: [
+      { Size: { type: "range" } },
+      { Navigation: { back: false, forward: false } },
+      'DrawingMode'
+   ],
+   webStorage: 'local'
+});
 
-var brushState = {
-   color: "white",
-   size: "2"
-}
-
-var rect = document.querySelector("#container").getBoundingClientRect()
-var el = document.getElementById('canvas');
-el.setAttribute("width", rect.width)
-el.setAttribute("height", rect.height)
-var ctx = el.getContext('2d');
-var isDrawing;
-
-function onDown(e) {
-   isDrawing = true;
-   ctx.beginPath()
-   if (e.touches) {
-      var x = e.touches[0].pageX,
-          y = e.touches[0].pageY
-   } else {
-      var x = e.pageX,
-          y = e.pageY
-   }
-   ctx.moveTo(x, y);
-};
-
-function onMove(e) {
-   if (isDrawing) {
-      if (e.touches) {
-         var x = e.touches[0].pageX,
-             y = e.touches[0].pageY
-      } else {
-         var x = e.pageX,
-             y = e.pageY
-      }
-      ctx.lineWidth = brushState.size;
-      ctx.strokeStyle = brushState.color;
-      ctx.lineTo(x, y);
-      ctx.stroke();
-   }
-};
-
-function onUp() {
-   isDrawing = false;
-   // brushState.size += 2
-};
-
-var $el = $(el)
-
-$el.on("mousedown touchstart", function (e) {
-   onDown(e.originalEvent)
-})
-
-$el.on("mousemove touchmove", function (e) {
-   console.log(e.touches[0].clientX)
-   onMove(e.originalEvent)
-})
-
-$el.on("mouseup touchend", function (e) {
-   onUp(e.originalEvent)
-})
+customBoard.addControl('Download');
 
 </script>
 </html>
